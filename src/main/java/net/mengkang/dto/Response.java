@@ -4,12 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Response {
+
     private int error_code; // 成功时 0 ,如果大于 0 则表示则显示error_msg
     private String error_msg;
-    private Map<String,Object> data;
+    private Map<String, Object> data;
 
     public Response() {
-        data = new HashMap<String,Object>();
+        data = new HashMap<>();
     }
 
     public int getError_code() {

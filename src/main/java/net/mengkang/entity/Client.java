@@ -1,8 +1,5 @@
 package net.mengkang.entity;
 
-/**
- * Created by zhoumengkang on 16/7/2.
- */
 public class Client {
     private long id;
     private int roomId;

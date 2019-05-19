@@ -59,41 +59,34 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
             sendHttpResponse(ctx, req, new DefaultFullHttpResponse(HTTP_1_1, BAD_REQUEST));
             return;
         }
-
         // Allow only GET methods.
         if (req.method() != GET) {
             sendHttpResponse(ctx, req, new DefaultFullHttpResponse(HTTP_1_1, FORBIDDEN));
             return;
         }
-
         if ("/favicon.ico".equals(req.uri()) || ("/".equals(req.uri()))) {
             sendHttpResponse(ctx, req, new DefaultFullHttpResponse(HTTP_1_1, NOT_FOUND));
             return;
         }
-
         QueryStringDecoder queryStringDecoder = new QueryStringDecoder(req.uri());
         Map<String, List<String>> parameters = queryStringDecoder.parameters();
-
         if (parameters.size() == 0 || !parameters.containsKey(HTTP_REQUEST_STRING)) {
             System.err.printf(HTTP_REQUEST_STRING + "参数不可缺省");
             sendHttpResponse(ctx, req, new DefaultFullHttpResponse(HTTP_1_1, NOT_FOUND));
             return;
         }
-
         client = RequestService.clientRegister(parameters.get(HTTP_REQUEST_STRING).get(0));
         if (client.getRoomId() == 0) {
             System.err.printf("房间号不可缺省");
             sendHttpResponse(ctx, req, new DefaultFullHttpResponse(HTTP_1_1, NOT_FOUND));
             return;
         }
-
         // 房间列表中如果不存在则为该频道,则新增一个频道 ChannelGroup
         if (!channelGroupMap.containsKey(client.getRoomId())) {
             channelGroupMap.put(client.getRoomId(), new DefaultChannelGroup(GlobalEventExecutor.INSTANCE));
         }
         // 确定有房间号,才将客户端加入到频道中
         channelGroupMap.get(client.getRoomId()).add(ctx.channel());
-
         // Handshake
         WebSocketServerHandshakerFactory wsFactory = new WebSocketServerHandshakerFactory(getWebSocketLocation(req), null, true);
         handshaker = wsFactory.newHandshaker(req);
@@ -101,7 +94,6 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
             WebSocketServerHandshakerFactory.sendUnsupportedVersionResponse(ctx.channel());
         } else {
             ChannelFuture channelFuture = handshaker.handshake(ctx.channel(), req);
-
             // 握手成功之后,业务逻辑
             if (channelFuture.isSuccess()) {
                 if (client.getId() == 0) {
@@ -114,7 +106,6 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
     }
 
     private void broadcast(ChannelHandlerContext ctx, WebSocketFrame frame) {
-
         if (client.getId() == 0) {
             Response response = new Response(1001, "没登录不能聊天哦");
             String msg = new JSONObject(response).toString();

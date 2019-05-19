@@ -13,7 +13,8 @@ public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel
     @Override
     public void initChannel(SocketChannel ch) throws Exception {
         ChannelPipeline pipeline = ch.pipeline();
-
+        //将字节编码为HttpRequest、HttpContent和LastHttpContent
+        //并将HttpRequest、HttpContent和LastHttpContent编码为字节
         pipeline.addLast(new HttpServerCodec());
         pipeline.addLast(new HttpObjectAggregator(65536));
         pipeline.addLast(new WebSocketServerCompressionHandler());

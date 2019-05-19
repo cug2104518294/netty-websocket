@@ -17,27 +17,21 @@ public class RequestService {
     public static Client clientRegister(String request) {
         String res = new String(Base64.decodeBase64(request));
         JSONObject json = new JSONObject(res);
-
         Client client = new Client();
-
         if (!json.has("rid")) {
             return client;
         }
-
         try {
             client.setRoomId(json.getInt("rid"));
         } catch (JSONException e) {
             e.printStackTrace();
             return client;
         }
-
         if (!json.has("id") || !json.has("token")) {
             return client;
         }
-
         Long id;
         String token;
-
         try {
             id = json.getLong("id");
             token = json.getString("token");
@@ -45,19 +39,14 @@ public class RequestService {
             e.printStackTrace();
             return client;
         }
-
         if (!checkToken(id, token)) {
             return client;
         }
-
         client.setId(id);
-
         return client;
     }
-
     /**
      * 从 redis 里根据 id 获取 token 与之对比
-     *
      * @param id
      * @param token
      * @return
